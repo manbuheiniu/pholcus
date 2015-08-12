@@ -18,10 +18,10 @@ type Spider struct {
 	Pausetime   [2]uint //暂停区间Pausetime[0]~Pausetime[0]+Pausetime[1]
 	*RuleTree
 	//以下为可选成员
-	MaxPage int
-	Keyword string
-	Depth   int
-	Proxy   string //代理服务器 example='localhost:80'
+	MaxPage   int
+	Keyword   string
+	UseCookie bool
+	Proxy     string //代理服务器 example='localhost:80'
 }
 
 // 开始执行
@@ -37,7 +37,7 @@ func (self *Spider) Gost() *Spider {
 	gost.Pausetime = self.Pausetime
 	gost.MaxPage = self.MaxPage
 	gost.Keyword = self.Keyword
-	gost.Depth = self.Depth
+	gost.UseCookie = self.UseCookie
 	gost.Proxy = self.Proxy
 	gost.RuleTree = &RuleTree{
 		Root:  self.Root,
@@ -88,8 +88,8 @@ func (self *Spider) GetRules() map[string]*Rule {
 	return self.RuleTree.Nodes
 }
 
-func (self *Spider) SetPausetime(a, b uint) {
-	self.Pausetime = [2]uint{a, b}
+func (self *Spider) SetPausetime(pause [2]uint) {
+	self.Pausetime = pause
 }
 
 // 根据响应流运行指定解析规则，不推荐在规则中使用
