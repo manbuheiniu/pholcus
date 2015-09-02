@@ -9,7 +9,7 @@ import (
 
 const (
 	// 软件版本号
-	APP_VERSION = "v0.6.0"
+	APP_VERSION = "v0.6.2"
 
 	// 软件作者
 	APP_AUTHOR = "henrylee2cn"
@@ -19,7 +19,7 @@ const (
 
 	APP_FULL_NAME = APP_NAME + "_" + APP_VERSION + " （by " + APP_AUTHOR + "）"
 
-	// 蜘蛛池容量
+	// 蜘蛛池最大容量
 	CRAWLS_CAP = 50
 
 	// 收集器容量
@@ -28,24 +28,49 @@ const (
 
 // 相关默认值，可在main中重新定义
 var (
-	// mongodb数据库服务器
-	DB_URL = "127.0.0.1:27017"
+	// mongodb数据库输出配置
+	MGO_OUTPUT = &MgoOutput{
+		Host:      "127.0.0.1:27017",
+		DefaultDB: "pholcus",
+		DBClass:   make(map[string]string),
+		TableFmt:  "d",
+	}
 
-	//mongodb数据库名称
-	DB_NAME = "temp-collection-tentinet"
-
-	//mongodb数据库集合
-	DB_COLLECTION = "news"
-
-	//mysql地址
-	MYSQL_HOST = "127.0.0.1:3306"
-	//msyql数据库
-	MYSQL_DB = "pholcus"
-	//mysql用户
-	MYSQL_USER = "root"
-	//mysql密码
-	MYSQL_PW = ""
+	// mysql数据库输出配置
+	MYSQL_OUTPUT = &MysqlOutput{
+		Host:      "127.0.0.1:3306",
+		DefaultDB: "pholcus",
+		User:      "root",
+		Password:  "",
+	}
 )
+
+// mongodb数据库输出配置
+type MgoOutput struct {
+	// 数据库服务器地址
+	Host string
+	// 默认数据库
+	DefaultDB string
+	// key:蜘蛛规则清单
+	// value:数据库名
+	DBClass map[string]string
+	// 非默认数据库时以当前时间为集合名
+	// h: 精确到小时 (格式 2015-08-28-09)
+	// d: 精确到天 (格式 2015-08-28)
+	TableFmt string
+}
+
+// mysql数据库输出配置
+type MysqlOutput struct {
+	// 数据库服务器地址
+	Host string
+	// 默认数据库
+	DefaultDB string
+	// 用户名
+	User string
+	// 密码
+	Password string
+}
 
 func init() {
 	// 初始化主要的运行时参数
@@ -54,7 +79,7 @@ func init() {
 		Port:      2015,
 		Master:    "127.0.0.1",
 		ThreadNum: 20,
-		Pausetime: [2]uint{1000, 3000},
+		Pausetime: [2]uint{100, 300},
 		DockerCap: 10000,
 
 		MaxPage: 100,
